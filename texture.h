@@ -1,37 +1,55 @@
+#ifndef HEAD_TEXTURE
+#define HEAD_TEXTURE
+
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include <memory>
-#include <string>
-#include <stdexcept>
 
 #include "game.h"
 
-#include "vector2.h"
-#include "sdlWrap.h"
-#include "nonCopyable.h"
-
-using SDLTexture = std::shared_ptr<SDL_Texture>;
-
-struct Texture : public NonCopyable
+class Texture
 {
+private: // 静态函数和数据结构定义
+	// sdl对象包装器
+	struct wrapper
+	{
+		SDL_Texture* ptr;
+
+		wrapper(SDL_Texture* ptr) : ptr(ptr) {}
+		~wrapper() { SDL_DestroyTexture(this->ptr); }
+	};
+
 public:
-	static Texture LoadFromFile(const std::string& filePath);
+	// sdl对象的共享指针包装器
+	using SDLTexture = std::shared_ptr<wrapper>;
+
+	// 从文件加载纹理
+	static Texture LoadFormFile(const char* filePath);
 
 private:
-	Vector2i m_offset;
-	Vector2i m_size;
+	SDLTexture m_sharedPrt;
 
-	Texture(const SDLTexture& ptr);
-	Texture(const SDLTexture& ptr, Vector2i offset, Vector2i size);
+	vector2i m_size;
+	vector2i m_offset;
+
+	SDL_Rect m_src;
+
+	Texture(SDLTexture sharedPtr, vector2i size, vector2i offset);
 
 public:
+	Texture(const Texture&) = default;
+	Texture& operator=(const Texture&) = default;
+
 	~Texture() = default;
 
 	void setFilter(SDL_ScaleMode mode);
-	SDL_ScaleMode getFilter()const;
 
-	Vector2i getSize()const;
-	Vector2i getOrigSize()const;
+	vector2i getSize()const { return m_size; }
+	vector2i getOffset()const { return m_offset; }
 
-	SDL_Texture* getOrigPtr();
+	inline SDL_Rect* _rectPtr() { return &m_src; }
+	inline SDL_Texture* _texturePtr() { return m_sharedPrt->ptr; }
 };
+
+#endif

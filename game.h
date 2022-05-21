@@ -1,30 +1,45 @@
-//#ifndef HEAD_SDL_SIMPLE_WRAP
-//#define HEAD_SDL_SIMPLE_WRAP
+#ifndef HEAD_WINDOW
+#define HEAD_WINDOW
+
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include <string>
+#include <list>
 #include <stdexcept>
 
+#include "functions.h"
 #include "vector2.h"
 #include "nonCopyable.h"
 
-class Game : public NonCopyable
+class Game: NonCopyable
 {
 public:
-	static Game& GetInstance();
+	const char* DefaultTitle = "Plane Wars";
+	const int DefaultHeight = 600;
+	const int DefaultWidth = 800;
+
+	static Game& GetInstace();
 
 private:
-	SDL_Window* m_windowOrigPtr;
-	SDL_Renderer* m_rendererOrigPtr;
-	
+	SDL_Window* m_window;
+	SDL_Renderer* m_renderer;
+
 	Game();
 	~Game();
 
 public:
-	void setDisplayParam(const std::string& title, Vector2i size);
-	void setDisplayParam(const std::string& title, Vector2i size, Vector2i position);
+	void setTitle(const char* title);
+	void setSize(int w, int h);
 
-	SDL_Renderer* getRendererOrigPtr();
-	SDL_Window* getWindowOrigPtr();
+	void setRenderDrawColor(int r, int g, int b, int a = 255);
+
+	void renderClear();
+	void renderPresent();
+
+	void _render(SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dest);
+
+	inline SDL_Window* _windowPtr() { return this->m_window; }
+	inline SDL_Renderer* _rendererPtr() { return this->m_renderer; }
 };
+
+#endif

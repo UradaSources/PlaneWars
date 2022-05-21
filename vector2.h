@@ -5,31 +5,31 @@
 #include <limits>
 
 template <typename T>
-struct Vector2
+struct basic_vector2
 {
 public:
 	// 无穷大
-	static Vector2 Inf()
+	static basic_vector2 Inf()
 	{
 		constexpr T inf = std::numeric_limits<T>::infinity();
-		return Vector2(inf, inf);
+		return basic_vector2(inf, inf);
 	}
-	static Vector2 Zero()
+	static basic_vector2 Zero()
 	{
-		return Vector2(T(), T());
+		return basic_vector2(T(), T());
 	}
 
 	// 归一化
-	static Vector2 Normalized(const Vector2& v)
+	static basic_vector2 Normalized(const basic_vector2& v)
 	{
 		T length = v.length();
 		T x = v.x != 0 ? v.x / length : 0;
 		T y = v.y != 0 ? v.y / length : 0;
-		return Vector2(x, y);
+		return basic_vector2(x, y);
 	}
 
 	// 线性插值
-	static Vector2 Lerp(const Vector2& from, const Vector2& to, T t)
+	static basic_vector2 Lerp(const basic_vector2& from, const basic_vector2& to, T t)
 	{
 		return from + (to - from) * t;
 	}
@@ -37,66 +37,71 @@ public:
 public:
 	T x, y;
 
-	Vector2(T x = 0, T y = 0) :
-		x(x), y(y) {};
-	Vector2(const Vector2& copy) :
-		x(copy.x), y(copy.y) {};
+	basic_vector2(T x = T(), T y = T()) : x(x), y(y) {};
+	basic_vector2(const basic_vector2& copy) : x(copy.x), y(copy.y) {};
 
 	T length() const
 	{
 		return std::sqrt(x * x + y * y);
 	}
+	basic_vector2& normalized()
+	{
+		T length = this->length();
+		this->x = this->x != 0 ? this->x / length : 0;
+		this->y = this->y != 0 ? this->y / length : 0;
+		return *this;
+	}
 };
 
 template <typename T>
-Vector2<T> operator+(Vector2<T> left, Vector2<T> right)
+basic_vector2<T> operator+(basic_vector2<T> left, basic_vector2<T> right)
 {
-	return Vector2<T>(left.x + right.x, left.y + right.y);
+	return basic_vector2<T>(left.x + right.x, left.y + right.y);
 }
 template <typename T>
-Vector2<T> operator-(Vector2<T> left, Vector2<T> right)
+basic_vector2<T> operator-(basic_vector2<T> left, basic_vector2<T> right)
 {
-	return Vector2<T>(left.x - right.x, left.y - right.y);
+	return basic_vector2<T>(left.x - right.x, left.y - right.y);
 }
 template <typename T>
-Vector2<T> operator*(Vector2<T> left, Vector2<T> right)
+basic_vector2<T> operator*(basic_vector2<T> left, basic_vector2<T> right)
 {
-	return Vector2<T>(left.x * right.x, left.y * right.y);
+	return basic_vector2<T>(left.x * right.x, left.y * right.y);
 }
 template <typename T>
-Vector2<T> operator/(Vector2<T> left, Vector2<T> right)
+basic_vector2<T> operator/(basic_vector2<T> left, basic_vector2<T> right)
 {
-	return Vector2<T>(left.x / right.x, left.y / right.y);
-}
-
-template <typename T>
-Vector2<T> operator+(Vector2<T> left, T right)
-{
-	return Vector2<T>(left.x + right, left.y + right);
-}
-template <typename T>
-Vector2<T> operator-(Vector2<T> left, T right)
-{
-	return Vector2<T>(left.x - right, left.y - right);
-}
-template <typename T>
-Vector2<T> operator*(Vector2<T> left, T right)
-{
-	return Vector2<T>(left.x * right, left.y * right);
-}
-template <typename T>
-Vector2<T> operator/(Vector2<T> left, T right)
-{
-	return Vector2<T>(left.x / right, left.y / right);
+	return basic_vector2<T>(left.x / right.x, left.y / right.y);
 }
 
 template <typename T>
-bool operator==(Vector2<T> left, Vector2<T> right)
+basic_vector2<T> operator+(basic_vector2<T> left, T right)
+{
+	return basic_vector2<T>(left.x + right, left.y + right);
+}
+template <typename T>
+basic_vector2<T> operator-(basic_vector2<T> left, T right)
+{
+	return basic_vector2<T>(left.x - right, left.y - right);
+}
+template <typename T>
+basic_vector2<T> operator*(basic_vector2<T> left, T right)
+{
+	return basic_vector2<T>(left.x * right, left.y * right);
+}
+template <typename T>
+basic_vector2<T> operator/(basic_vector2<T> left, T right)
+{
+	return basic_vector2<T>(left.x / right, left.y / right);
+}
+
+template <typename T>
+bool operator==(basic_vector2<T> left, basic_vector2<T> right)
 {
 	return left.x == right.x && left.y == right.y;
 }
 
-using Vector2i = Vector2<int>;
-using Vector2f = Vector2<float>;
+using vector2 = basic_vector2<float>;
+using vector2i = basic_vector2<int>;
 
 #endif // HEAD_VECTOR

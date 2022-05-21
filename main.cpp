@@ -1,35 +1,73 @@
+#include <cstdio>
+#include <memory>
+
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include <cstdio>
+#include <stdexcept>
 
-#include <memory>
-
-#include "sdlWrap.h"
-#include "game.h"
+#include "sprite.h"
 
 int main(int argc, char** argv)
 {
-	// initialize SDL video
-	if (SDL_Init(SDL_INIT_VIDEO))
+	try
 	{
-		printf("Unable to init SDL: %s\n", SDL_GetError());
-		return 1;
+		// 获取即初始化
+		Game& game = Game::GetInstace();
+
+		Texture texture = Texture::LoadFormFile("box.png");
+		texture.setFilter(SDL_ScaleMode::SDL_ScaleModeNearest);
+
+		Sprite sprite(texture);
+
+		//SDL_Rect src;
+		//src.x = 0;
+		//src.y = 0;
+
+		//src.w = 36;
+		//src.h = 36;
+
+		//SDL_Rect dest;
+		//dest.x = 100;
+		//dest.y = 100;
+
+		//dest.w = 200;
+		//dest.h = 200;
+
+		bool quit = false;
+		SDL_Event e;
+
+		while (!quit)
+		{
+			while (SDL_PollEvent(&e) != 0)
+			{
+				if (e.type == SDL_QUIT)
+				{
+					quit = true;
+				}
+				else if (e.type == SDL_KEYDOWN)
+				{
+
+				}
+			}
+
+			game.renderClear();
+
+			sprite.draw();
+
+			game.renderPresent();
+
+			//SDL_RenderCopy(game._rendererPtr(), texture._texturePtr(), &src, &dest);
+
+			//SDL_SetRenderDrawColor(game._rendererPtr(), 1, 1, 1, 1);
+			//SDL_RenderPresent(game._rendererPtr());
+		}
+
+		return 0;
 	}
-
-	Game& game = Game::GetInstance();
-	game.setDisplayParam("main", Vector2i(800, 600));
-
-	using SDLTexture = SDLWrap<SDL_Texture>;
-
-	SDL_Texture* texture = IMG_LoadTexture(game.getRendererOrigPtr(), "test.jpg");
-	// SDLTexture t(texture, SDL_DestroyTexture);
-	std::shared_ptr<SDLTexture> m = std::make_shared<SDLTexture>(texture, SDL_DestroyTexture);
-
-	SDL_Texture* s = m->get();
-	std::printf("%d", s->w);
-
-	SDL_Delay(5000);
-
-	return 0;
+	catch (std::exception& exp)
+	{
+		std::printf("%s", exp.what());
+		return -1;
+	}
 }

@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\simpleStruct">
+    <Filter Include="头文件\things">
       <UniqueIdentifier>{5a15d4a9-e4a3-4251-b897-bc16cb124ca1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -22,19 +22,19 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="vector2.h">
-      <Filter>头文件\simpleStruct</Filter>
+      <Filter>头文件\things</Filter>
     </ClInclude>
     <ClInclude Include="nonCopyable.h">
-      <Filter>头文件\simpleStruct</Filter>
+      <Filter>头文件\things</Filter>
+    </ClInclude>
+    <ClInclude Include="functions.h">
+      <Filter>头文件\things</Filter>
     </ClInclude>
     <ClInclude Include="texture.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="sprite.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="sdlWrap.h">
-      <Filter>头文件\simpleStruct</Filter>
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -47,5 +47,16 @@
     <ClCompile Include="texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="function.cpp">
+      <Filter>头文件\things</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="box.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

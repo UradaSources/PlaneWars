@@ -1,34 +1,32 @@
-//#include "texture.h"
-//
-//Texture Texture::LoadFromFile(const std::string& filePath)
-//{
-//	SDL_Renderer* renderer = Game::GetInstance().getRendererOrigPtr();
-//
-//	// 创建纹理
-//	SDL_Texture* texture = IMG_LoadTexture(renderer, filePath.c_str());
-//	if (texture == nullptr) throw std::runtime_error(IMG_GetError());
-//
-//	// 创建智能指针, 托管sdl指针
-//	SDLTexture shader(texture, SDL_DestroyTexture);
-//
-//	return Texture(shader);
-//}
-//Texture::Texture(const SDLTexture& ptr) :
-//	m_ptr(ptr),
-//	m_offset(),
-//	m_size()
-//{
-//	int w = ptr->w;
-//}
-//
-//Texture::Texture(const SDLTexture& ptr, Vector2i offset, Vector2i size);
-//
-//Texture::Texture(Texture& other, Vector2i offset, Vector2i size);
-//
-//void Texture::setFilter(SDL_ScaleMode mode);
-//SDL_ScaleMode Texture::getFilter()const;
-//
-//Vector2i Texture::getSize()const;
-//Vector2i Texture::getOrigSize()const;
-//
-//SDL_Texture* Texture::getOrigPtr();
+#include <stdexcept>
+
+#include "functions.h"
+
+#include "texture.h"
+
+Texture Texture::LoadFormFile(const char* filePath)
+{
+	SDL_Renderer* renderer = Game::GetInstace()._rendererPtr();
+	SDL_Texture* texture = IMG_LoadTexture(renderer, filePath);
+
+	// 获取纹理的尺寸
+	int w, h;
+	if (SDL_QueryTexture(texture, nullptr, nullptr, &w, &h))
+		throw std::runtime_error(SDLErrorInfo());
+
+	// 创建并返回纹理对象
+	auto sharedPtr = std::make_shared<wrapper>(texture);
+	return Texture(sharedPtr, vector2i(w, h), vector2i(0, 0));
+}
+
+Texture::Texture(SDLTexture sharedPtr, vector2i size, vector2i offset) :
+	m_sharedPrt(sharedPtr),
+	m_size(size),
+	m_offset(offset),
+	m_src{ m_offset.x, m_offset.y, m_size.x, m_size.y } {};
+
+void Texture::setFilter(SDL_ScaleMode mode)
+{
+	if (SDL_SetTextureScaleMode(m_sharedPrt->ptr, mode))
+		throw std::runtime_error(ErrorInfo("invaild texture ptr"));
+}

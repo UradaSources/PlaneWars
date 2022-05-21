@@ -1,56 +1,80 @@
 #include "game.h"
 
-const int DefaultWindowWidth = 800;
-const int DefaultWindowHeight = 600;
-
-Game& Game::GetInstance()
+Game& Game::GetInstace()
 {
-	static Game _instance;
-	return _instance;
+	static Game instance;
+	return instance;
 }
 
-Game::Game():
-	m_windowOrigPtr(nullptr),
-	m_rendererOrigPtr(nullptr)
+Game::Game()
 {
-	int flag = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-	int errorCode = SDL_CreateWindowAndRenderer(
-		DefaultWindowWidth, DefaultWindowHeight,
-		flag,
-		&this->m_windowOrigPtr, &this->m_rendererOrigPtr
-	);
+	// 初始化
+	int initFlag = SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS;
+	if (SDL_Init(initFlag)) throw std::runtime_error(SDLErrorInfo());
+	
+	// 初始化sdl_image
+	int imgInitFlag = IMG_INIT_PNG | IMG_INIT_JPG;
+	int rtCode = IMG_Init(imgInitFlag);
+	if ((rtCode & imgInitFlag) != imgInitFlag)
+		throw std::runtime_error(IMGErrorInfo());
 
-	if (errorCode) throw std::runtime_error(SDL_GetError());
+	// 获取屏幕信息
+	SDL_DisplayMode displayMode;
+	if (SDL_GetCurrentDisplayMode(0, &displayMode)) throw std::runtime_error(SDLErrorInfo());
+
+	// 计算窗口位置
+	int x, y;
+	x = (displayMode.w - DefaultWidth) / 2;
+	y = (displayMode.h - DefaultHeight) / 2;
+
+	// 创建窗口和渲染器
+	int windowInitFlag = SDL_WINDOW_MOUSE_FOCUS;
+	m_window = SDL_CreateWindow(DefaultTitle, x, y, DefaultWidth, DefaultHeight, windowInitFlag);
+	if (m_window == nullptr) throw std::runtime_error(SDL_GetError());
+
+	m_renderer = SDL_CreateRenderer(m_window, -1, 0);
+	if (m_renderer == nullptr) throw std::runtime_error(SDL_GetError());
 }
 
 Game::~Game()
 {
-	SDL_DestroyRenderer(this->m_rendererOrigPtr);
-	SDL_DestroyWindow(this->m_windowOrigPtr);
+	// 释放sdl对象
+	SDL_DestroyRenderer(this->m_renderer);
+	SDL_DestroyWindow(this->m_window);
+	
+	// 关闭所有子系统
+	IMG_Quit();
+	SDL_Quit();
 }
 
-void Game::setDisplayParam(const std::string& title, Vector2i size)
+void Game::setTitle(const char* title)
 {
-	SDL_DisplayMode dm;
-	if (SDL_GetDesktopDisplayMode(0, &dm)) throw std::runtime_error(SDL_GetError());
-
-	Vector2i position((dm.w - size.x) / 2, (dm.h - size.y) / 2);
-
-	this->setDisplayParam(title, size, position);
+	SDL_SetWindowTitle(this->m_window, title);
 }
-void Game::setDisplayParam(const std::string& title, Vector2i size, Vector2i position)
+void Game::setSize(int w, int h)
 {
-	SDL_SetWindowTitle(m_windowOrigPtr, title.c_str());
-	SDL_SetWindowSize(m_windowOrigPtr, size.x, size.y);
-
-	SDL_SetWindowPosition(m_windowOrigPtr, position.x, position.y);
+	SDL_SetWindowSize(this->m_window, w, h);
 }
 
-SDL_Renderer* Game::getRendererOrigPtr()
+void Game::setRenderDrawColor(int r, int g, int b, int a = 255)
 {
-	return m_rendererOrigPtr;
+	SDL_SetRenderDrawColor(this->m_renderer, r, g, b, a);
 }
-SDL_Window* Game::getWindowOrigPtr()
+
+void Game::renderClear()
 {
-	return m_windowOrigPtr;
+	// 将清屏颜色设置为黑色
+	SDL_SetRenderDrawColor(this->m_renderer, 0x00, 0x00, 0x00, 0xFF);
+	SDL_RenderClear(this->m_renderer);	
+}
+void Game::renderPresent()
+{
+	// 更新屏幕缓冲
+	SDL_RenderPresent(this->m_renderer);
+}
+
+void Game::_render(SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dest)
+{
+	if (SDL_RenderCopy(this->m_renderer, texture, src, dest))
+		throw std::runtime_error(SDLErrorInfo());
 }

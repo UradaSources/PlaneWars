@@ -145,17 +145,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="functions.h" />
     <ClInclude Include="nonCopyable.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="sdlWrap.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="vector2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="function.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sprite.cpp" />
     <ClCompile Include="texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="box.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
